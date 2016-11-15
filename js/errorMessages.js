@@ -19,7 +19,7 @@ function addErrorMessage(id, msg) {
 		span.firstChild.value = msg;
 	}
 	else {
-		//span doesn't already exsist add it
+		//span doesn't already exist add it
 		span = document.createElement("span");
 		span.id = newId;
 		span.className = "error";

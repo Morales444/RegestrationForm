@@ -4,6 +4,57 @@
 // Function called when the form is submitted.
 // Function validates the form data.
 
+function validateUsername (username, message) {
+    //Validates that username meets the following criteria:
+    //1. Must be at least 8 characters long
+    //2. First character must be A-z or a-z
+    //3. Must contain at least on digit (0-9)
+    //Function returns true if all criteria is met and false if
+    //any criteria is not met
+
+    var char1;
+    var hasNumber;
+
+    //Check username length
+    if (username.length < 8) {
+        message.valueOf = "Username must be at least 8 characters";
+        return false;
+    }
+    //Check first character:
+    char1 = username.substr(0,1).toUpperCase();
+
+    if (!(char1 >= "A" && char1 <= "Z")) {
+        message.valueOf = "First character must be A-Z or a-z";
+        return false;
+    }
+
+    //Check for at least on digit or numeral
+    hasNumber = /\d/;
+    if (!(hasNumber.test(username))) {
+        message.valueOf = "Username must contain one numeral or non-alphabetic character";
+        return false;
+    }
+     /*
+     //Alternate Version:
+     var anyDigits = false;
+     while (!(anyDigits)) {
+         for (var i = 1; i < username.length; i++){
+             char1 = username.substr(i, 1);
+             if(char1 >= "0" && char1 <= "9"){
+                 anyDigits = true;
+                 break;
+             }
+         }
+         if (! (anyDigits)) {
+             return false;
+         }
+     }
+*/
+
+    //Otherwise all criteria met:
+    return true;
+}
+
 function validateForm(e) {
     'use strict';
 
@@ -15,12 +66,13 @@ function validateForm(e) {
     //Get form references:
     var firstName = U.$('firstName');
     var lastName = U.$('lastName');
+    var userName = U.$('userName');
     var email = U.$('email');
-    var phone;
-    var city;
-    var state;
-    var zip;
-    var terms; //We'll populate these later
+    var phone = U.$('phone');
+    var city = U.$('city');
+    var state = U.$('state');
+    var zip = U.$('zip');
+    var terms = U.$('terms'); //We'll populate these later
 
     //error flag:
     var error = false;
@@ -40,28 +92,63 @@ function validateForm(e) {
     }
     else {
         //alert("Invalid first name");
-        addErrorMessage('firstName', 'Invalid/missing first name');
+        addErrorMessage('firstName', 'Invalid/Missing first name');
         error = true;
     }
+    //Validate the last name using regular expression:
     if (/^[A-Z \.\-']{2,20}$/i.test(lastName.value)) {
 
         removeErrorMessage('lastName');
     }
     else {
 
-        addErrorMessage('lastName', 'Invalid/missing last name');
+        addErrorMessage('lastName', 'Invalid/Missing last name');
         error = true;
     }
-    //the email portion:
+    //Validate username using validateUsername function:
+    var msg = "initial message";
+    msg = Object(msg);
+    if(validateUsername(userName.value, msg)) {
+        //The username meets the requirements
+        removeErrorMessage('userName')
+    }
+    else {
+        //The username is not valid
+        addErrorMessage('userName', msg.valueOf);
+        error = true;
+    }
+    //Validate username using regular expression:
     if (/^[\w.-]+@[\w.-]+\.[A-Za-z]{2,6}$/i.test(email.value)) {
 
         removeErrorMessage('email');
     }
     else {
 
-        addErrorMessage('email', 'Invalid/missing email');
+        addErrorMessage('email', 'Invalid/Missing email');
         error = true;
     }
+
+    //Validate the phone number by using regular expression:
+    if (/^\d{3}[ \-\.]?\d{3}[ \-\.]?\d{4}$/i.test(phone.value)) {
+
+        removeErrorMessage('phone');
+    }
+    else {
+
+        addErrorMessage('phone', 'Phone number must be in XXX-XXX-XXXX or XXX.XXX.XXXX format');
+        error = true;
+    }
+
+    //Validate the zip code by using regular expression:
+    if (/^\d{5}(\-\d{4})?$/i.test(zip.value)) {
+
+        removeErrorMessage('zip');
+    }
+    else {
+        addErrorMessage('zip', 'Invalid/Missing zip code');
+        error = true;
+    }
+
 
     if (error) {
         if(e.preventDefault) {
